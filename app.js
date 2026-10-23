@@ -25,7 +25,7 @@ setInterval(()=>{const el=$('#dy');gsap.to(el,{y:-30,opacity:0,duration:.22,onCo
 function parts(el){const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;for(let i=0,n=lite?12:26;i<n;i++){const p=document.createElement('i');p.className='pt';p.style.left=x+'px';p.style.top=y+'px';document.body.appendChild(p);gsap.to(p,{x:R(-140,140),y:R(-140,90),scale:0,opacity:0,duration:R(.6,1.1),ease:'expo.out',onComplete:()=>p.remove()})}}
 $$('.sb').forEach(b=>b.addEventListener('click',()=>{parts(b);blip(520,.08)}));
 // scroll animations
-gsap.to('#hi',{...(lite?{scale:2.2,opacity:0}:{scale:5,opacity:0,filter:'blur(14px)'}),ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+gsap.to('#hi',{...(lite?{scale:1.7,opacity:0}:{scale:5,opacity:0,filter:'blur(14px)'}),ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
 $$('.rv').forEach(el=>gsap.from(el,lite?{y:30,opacity:0,duration:.7,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%',once:true}}:{y:60,opacity:0,filter:'blur(10px)',duration:1.1,ease:'expo.out',clearProps:'filter',scrollTrigger:{trigger:el,start:'top 90%',once:true}}));
 const tr=$('#track');
 if(!lite){const gs=$('#games'),gw=document.createElement('div');gw.id='gwrap';gs.parentNode.insertBefore(gw,gs);gw.appendChild(gs);
