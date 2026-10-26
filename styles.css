@@ -1030,9 +1030,6 @@ section:not(#games) {
     font-size: 16px;
   }
 }
-.lite .sb::before {
-  animation: none;
-}
 .tg.live {
   background: var(--a);
   color: #04050d;
