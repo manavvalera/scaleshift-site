@@ -1,3 +1,13 @@
+// non-blocking Google Fonts (preloaded in <head>, applied here)
+(function () {
+  var p = document.querySelector('link[rel="preload"][as="style"]');
+  if (p) {
+    var l = document.createElement("link");
+    l.rel = "stylesheet";
+    l.href = p.href;
+    document.head.appendChild(l);
+  }
+})();
 if (!window.gsap) {
   var _l = document.getElementById("ld");
   if (_l) _l.style.display = "none";
@@ -47,7 +57,6 @@ function audio() {
     ac && ac.state === "suspended" && ac.resume();
   } catch (e) {}
 }
-(window.requestIdleCallback || setTimeout)(() => setTimeout(mkAudio, 400));
 function blip(f = 600, d = 0.07) {
   if (!ac || !on) return;
   const o = ac.createOscillator(),
@@ -60,6 +69,7 @@ function blip(f = 600, d = 0.07) {
   o.start();
   o.stop(ac.currentTime + d);
 }
+let entered = false;
 let ls = null;
 if (window.Lenis && fine) {
   ls = new Lenis({ lerp: 0.085 });
@@ -96,6 +106,7 @@ const li = setInterval(() => {
 }, 110);
 gsap.set(".hl", { yPercent: 110 });
 $("#en").onclick = () => {
+  entered = true;
   document.body.classList.add("go");
   audio();
   blip(440, 0.15);
@@ -425,7 +436,8 @@ addEventListener("pointerdown", (e) => {
 const cg = $("#cg"),
   hs = $("#hs"),
   hw = $("#hw");
-let fc = 0,
+let ef = 0,
+  fc = 0,
   acc = 0,
   fr = 0,
   good = 0,
@@ -439,7 +451,8 @@ gsap.ticker.add((time, dtms) => {
     cy += (my - cy) * 0.12;
     cg.style.transform = `translate(${cx}px,${cy}px)`;
   }
-  if (gl && fc > 90) {
+  if (entered) ef++;
+  if (gl && entered && ef > 90) {
     acc += dtms;
     fr++;
     if (fr === 40) {
@@ -475,7 +488,7 @@ gsap.ticker.add((time, dtms) => {
     cA[i] += (a[i] - cA[i]) * 0.05;
     cB[i] += (b[i] - cB[i]) * 0.05;
   }
-  if (gl && U.uR && !(lite && time - lastDraw < 0.03)) {
+  if (gl && entered && U.uR && !(lite && time - lastDraw < 0.03)) {
     lastDraw = time;
     gl.uniform2f(U.uR, cv.width, cv.height);
     gl.uniform2f(U.uM, mm[0], mm[1]);
@@ -499,20 +512,6 @@ document.addEventListener("visibilitychange", () => {
     document.hidden ? ac.suspend() : ac.resume();
   } catch (e) {}
 });
-// countdown
-const TG = new Date("2026-11-14T18:00:00").getTime();
-setInterval(() => {
-  const d = Math.max(0, TG - Date.now()) / 1000,
-    p = (n) => String(Math.floor(n)).padStart(2, "0");
-  $("#cdn").textContent =
-    Math.floor(d / 86400) +
-    "d " +
-    p((d % 86400) / 3600) +
-    ":" +
-    p((d % 3600) / 60) +
-    ":" +
-    p(d % 60);
-}, 1000);
 // Studio Agent (quote assistant + receptionist)
 const KB = {
   "\\b(timings?|hours|office hours)\\b":

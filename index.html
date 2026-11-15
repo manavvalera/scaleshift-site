@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width,initial-scale=1,minimum-scale=1,viewport-fit=cover"
     />
-    <title>Scale Shift Studio | We Build Games, Websites &amp; Apps</title>
+    <title>Scale Shift Studio | Game, Web &amp; App Development in Vadodara</title>
     <meta
       name="description"
       content="Scale Shift Studio builds websites, mobile apps, AI tools and games for businesses and brands. Based in Vadodara, Gujarat. Message us on WhatsApp or Instagram."
@@ -21,20 +21,30 @@
       property="og:title"
       content="Scale Shift Studio — We Build Worlds That Shift Your Scale"
     />
-    />
     <meta
       property="og:description"
       content="We build websites, apps, AI tools and games that shift your scale. Rocket Booster is landing soon on Google Play."
     />
     <meta property="og:image" content="https://scaleshift.studio/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <meta name="twitter:title" content="Scale Shift Studio | Game, Web &amp; App Development in Vadodara" />
+    <meta name="twitter:description" content="We build websites, apps, AI tools and games that shift your scale. Rocket Booster is landing soon on Google Play." />
+    <meta name="twitter:image" content="https://scaleshift.studio/og.png" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;900&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
     />
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;900&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap"
+    /></noscript>
     <link rel="stylesheet" href="styles.css" />
     <noscript
       ><style>
@@ -49,25 +59,52 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "ProfessionalService",
-        "name": "Scale Shift Studio",
-        "url": "https://scaleshift.studio/",
-        "email": "hello@scaleshift.studio",
-        "description": "Web development, mobile app development, UI/UX design, AI automation and game development studio.",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Vadodara",
-          "addressRegion": "Gujarat",
-          "addressCountry": "IN"
-        },
-        "areaServed": "Worldwide",
-        "sameAs": ["https://instagram.com/scaleshift.studio"],
-        "knowsAbout": [
-          "Web development",
-          "Mobile app development",
-          "UI/UX design",
-          "AI automation",
-          "Game development"
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://scaleshift.studio/#org",
+            "name": "Scale Shift Studio",
+            "alternateName": ["ScaleShift", "Scale Shift"],
+            "url": "https://scaleshift.studio/",
+            "logo": "https://scaleshift.studio/favicon.svg",
+            "email": "hello@scaleshift.studio",
+            "telephone": "+91-9313070349",
+            "sameAs": ["https://instagram.com/scaleshift.studio"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://scaleshift.studio/#website",
+            "url": "https://scaleshift.studio/",
+            "name": "Scale Shift Studio",
+            "alternateName": ["ScaleShift", "Scale Shift"],
+            "publisher": { "@id": "https://scaleshift.studio/#org" },
+            "inLanguage": "en"
+          },
+          {
+            "@type": "ProfessionalService",
+            "@id": "https://scaleshift.studio/#service",
+            "name": "Scale Shift Studio",
+            "url": "https://scaleshift.studio/",
+            "image": "https://scaleshift.studio/og.png",
+            "email": "hello@scaleshift.studio",
+            "telephone": "+91-9313070349",
+            "description": "Web development, mobile app development, UI/UX design, AI automation and game development studio in Vadodara, Gujarat, India.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Vadodara",
+              "addressRegion": "Gujarat",
+              "addressCountry": "IN"
+            },
+            "areaServed": "Worldwide",
+            "parentOrganization": { "@id": "https://scaleshift.studio/#org" },
+            "knowsAbout": [
+              "Web development",
+              "Mobile app development",
+              "UI/UX design",
+              "AI automation",
+              "Game development"
+            ]
+          }
         ]
       }
     </script>
@@ -243,7 +280,7 @@
               counts.
             </p>
             <div>
-              <a class="sb f" href="/games/rocket-booster/">Learn more</a>
+              <a class="sb f" href="/games/rocket-booster/">Explore Rocket Booster</a>
               <a
                 class="sb"
                 href="https://instagram.com/scaleshift.studio"
@@ -329,6 +366,7 @@
         <form id="af" class="ag rv">
           <input
             id="ai"
+            aria-label="Describe your project idea"
             placeholder="e.g. I need an app for my gym with bookings"
             autocomplete="off"
           /><button class="sb f" type="submit">Draft brief ↗</button>
@@ -375,6 +413,13 @@
       </section>
     </main>
     <footer>
+      <p class="ab">
+        Scale Shift Studio (also written ScaleShift) is an independent game,
+        website and mobile app development studio in Vadodara, Gujarat, India.
+        We build business websites, Android and iOS apps, UI/UX design and AI
+        automation for clients worldwide, and publish our own games, including
+        Rocket Booster.
+      </p>
       <span>© 2026 SCALE SHIFT STUDIO · Games · Web · Apps · AI</span
       ><span class="m"
         >VADODARA, GUJARAT · +91 9313070349 · @scaleshift.studio</span

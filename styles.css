@@ -1042,3 +1042,5 @@ footer button {
   padding: 6px 14px;
   cursor: pointer;
 }
+
+footer .ab{flex-basis:100%;margin:0 0 8px;max-width:900px;font-size:13px;line-height:1.6}
