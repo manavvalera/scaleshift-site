@@ -1046,3 +1046,4 @@ footer button {
 }
 
 footer .ab{flex-basis:100%;margin:0 0 8px;max-width:900px;font-size:13px;line-height:1.6}
+footer .ab a{color:var(--a)}
