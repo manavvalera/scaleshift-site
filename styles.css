@@ -289,8 +289,10 @@ section {
   opacity: 0;
   pointer-events: none;
 }
-#ld h1 {
-  font-size: clamp(30px, 8vw, 90px);
+#ld .ldt {
+  font: 900 clamp(30px, 8vw, 90px) / 1.02 Unbounded, system-ui, sans-serif;
+  letter-spacing: -0.035em;
+  overflow-wrap: break-word;
 }
 #lp {
   height: 2px;
