@@ -24,6 +24,6 @@ summary{cursor:pointer;font:700 19px "Space Grotesk",sans-serif;list-style:none}
 .end{text-align:center;border:1px solid rgba(255,255,255,.18);border-radius:32px;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent);margin-top:30px}
 .also{margin-top:30px}.also a{color:var(--c1)}
 .rv{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}.rv.in{opacity:1;transform:none}
-@media(prefers-reduced-motion:reduce){.bg,.mq div{animation:none}.rv{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.bg{animation:none}.mq div{animation-duration:55s}.rv{opacity:1;transform:none}}
 .hr{display:flex;gap:8px;align-items:center}.hr .b{margin:0;padding:10px 16px}.bk{margin-top:40px}
 @media(max-width:520px){.top{padding:8px 8px 8px 16px}.logo{font-size:14px}.hr{gap:6px}.hr .b{padding:9px 12px;font-size:10px}}
