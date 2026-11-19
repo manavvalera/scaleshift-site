@@ -107,6 +107,9 @@ const li = setInterval(() => {
 gsap.set(".hl", { yPercent: 110 });
 $("#en").onclick = () => {
   entered = true;
+  try {
+    sessionStorage.setItem("ss_in", "1");
+  } catch (e) {}
   document.body.classList.add("go");
   audio();
   blip(440, 0.15);
@@ -631,3 +634,25 @@ if (sndBtn) sndBtn.onclick = () => {
   if (gn) gn.gain.value = s ? 0.04 : 0;
   sndBtn.textContent = s ? "SOUND ON" : "SOUND OFF";
 };
+// coming back from a sub-page: skip the intro and land on the right section
+(function () {
+  var nv = (performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || {},
+    seen = false,
+    sub = false,
+    t = location.hash.length > 1 ? document.getElementById(location.hash.slice(1)) : null;
+  try {
+    seen = sessionStorage.getItem("ss_in") === "1";
+  } catch (e) {}
+  var ref = document.referrer || "";
+  if (seen && (nv.type === "back_forward" || (ref.indexOf(location.origin) === 0 && ref.replace(location.origin, "").length > 1))) sub = true;
+  if (!t && !sub) return;
+  clearInterval(li);
+  entered = true;
+  document.body.classList.add("go");
+  $("#ld").style.display = "none";
+  gsap.set(".hl", { yPercent: 0 });
+  setTimeout(function () {
+    ScrollTrigger.refresh();
+    if (t) ls ? ls.scrollTo(t, { immediate: true }) : t.scrollIntoView();
+  }, 400);
+})();

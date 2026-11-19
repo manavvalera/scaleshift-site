@@ -12,3 +12,5 @@ p,li{color:var(--mut)}ul{padding-left:22px}li{margin:6px 0}
 .upd{font:700 12px 'Space Mono',monospace;letter-spacing:.08em;color:var(--mut)}
 .box{border:1px solid var(--bd);border-radius:18px;padding:18px 22px;background:rgba(5,7,18,.7);margin:22px 0}.box p{margin:6px 0;color:var(--fg)}
 footer{padding:40px 0 60px;border-top:1px solid var(--bd);margin-top:50px;font-size:15px;color:var(--mut)}
+
+.back{display:inline-block;padding:10px 16px;border:1px solid var(--a,#00f0ff);border-radius:999px;color:#fff;text-decoration:none;transition:.2s}.back:hover{background:var(--a,#00f0ff);color:#04050d}.bk{margin:44px 0 10px}

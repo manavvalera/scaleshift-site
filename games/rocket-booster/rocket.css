@@ -31,3 +31,5 @@ details{border:1px solid var(--bd);border-radius:16px;padding:16px 20px;margin:1
 footer{padding:40px 0 70px;border-top:1px solid var(--bd);color:var(--mut);font-size:15px}footer a{margin-right:18px}
 @media(prefers-reduced-motion:reduce){.rk{animation:none}.btn{transition:none}html{scroll-behavior:auto}}
 @media(max-width:700px){.rk{position:static;display:block;font-size:110px;margin-top:18px}}
+
+.back{display:inline-block;padding:10px 16px;border:1px solid var(--a,#00f0ff);border-radius:999px;color:#fff;text-decoration:none;transition:.2s}.back:hover{background:var(--a,#00f0ff);color:#04050d}.bk{margin:44px 0 10px}
