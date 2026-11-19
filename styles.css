@@ -1054,6 +1054,17 @@ footer .ab{font-size:12px;opacity:.65}
 .vs{display:block;margin:14px 0 14px;font:700 11px "Space Mono",monospace;letter-spacing:.12em;color:var(--a);transition:transform .25s}
 .cd:hover .vs{transform:translateX(6px)}
 
-/* games cards on mobile: icon sits above the text instead of over it */
-.lite .pn .e{position:static;top:auto;left:auto;align-self:flex-start;margin:0 0 auto;padding-bottom:18px;font-size:72px;line-height:1}
+/* ===== service cards: icon is a gradient app-tile in the flow (never overlaps text) ===== */
+.cd .ic{position:static;display:grid;place-items:center;width:80px;height:80px;margin:0 0 auto;border-radius:24px;background:var(--g);font-size:42px;line-height:1;filter:none;box-shadow:0 14px 34px -12px var(--a),inset 0 0 0 1px rgba(255,255,255,.28);transition:transform .35s cubic-bezier(.2,.9,.3,1.4)}
+.cd .ic+h3{margin-top:18px}
+@media (hover:hover){.cd:hover .ic{transform:translateY(-5px) rotate(-7deg) scale(1.08)}}
+/* ===== games cards on mobile: big art stage with glow + orbiting ring ===== */
+.lite .pn{min-height:520px}
+.lite .pn .e{position:relative;top:auto;left:auto;isolation:isolate;flex:1 1 auto;display:grid;place-items:center;align-self:stretch;min-height:210px;margin:0;padding:0 0 20px;font-size:112px;line-height:1;animation:none;filter:none;text-shadow:none}
+.lite .pn .e::before{content:"";position:absolute;z-index:-1;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--a),transparent 68%);opacity:.4;animation:pls 3.4s ease-in-out infinite}
+.lite .pn .e::after{content:"";position:absolute;z-index:-1;width:196px;height:196px;border-radius:50%;border:2px dashed rgba(255,255,255,.32);background:radial-gradient(circle at 50% 2px,var(--a) 0 6px,transparent 7px);animation:spn 16s linear infinite}
+@keyframes pls{50%{transform:scale(1.2);opacity:.6}}
+@keyframes spn{to{transform:rotate(360deg)}}
+html.perf .lite .pn .e::before,html.perf .lite .pn .e::after,html.perf .lite .pn .e{animation:none}
+@media (prefers-reduced-motion:reduce){.lite .pn .e::before,.lite .pn .e::after{animation:none}}
 .lite .pn .n{font-size:84px;top:4px;right:16px}
