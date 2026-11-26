@@ -4,12 +4,13 @@
   var cx = cv.getContext("2d"), W = 300, H = 400, dpr = Math.min(window.devicePixelRatio || 1, 2);
   cv.width = W * dpr; cv.height = H * dpr; cx.scale(dpr, dpr);
   var GY = H - 34, LP = { x: 26, w: 76 }, TP = { x: 196, w: 78 };
-  var keys = { l: 0, r: 0, t: 0 }, R, parts, coins, fuel, state, msg, shake = 0, over = 0, best = 0, stars = [];
+  var keys = { l: 0, r: 0, t: 0 }, R, parts, coins, fuel, state, msg, meteors = [], warns = [], spawnT = 0, shake = 0, over = 0, best = 0, stars = [];
   for (var i = 0; i < 46; i++) stars.push([Math.random() * W, Math.random() * (GY - 20), Math.random() * 1.4 + 0.3, Math.random() * 6]);
   function reset() {
     R = { x: LP.x + LP.w / 2, y: GY - 15, vx: 0, vy: 0, a: 0 };
     fuel = 100; parts = []; state = "idle"; msg = "HOLD THRUST|TO LAUNCH";
-    coins = [[150, 270], [92, 178], [226, 140]].map(function (c) { return { x: c[0], y: c[1], got: 0 }; });
+    meteors = []; warns = []; spawnT = 1.8;
+    coins = [[150, 232], [92, 168], [226, 150]].map(function (c) { return { x: c[0], y: c[1], got: 0 }; });
   }
   function boom(n, c) {
     for (var i = 0; i < n; i++) { var a = Math.random() * 6.28, s = 40 + Math.random() * 150; parts.push({ x: R.x, y: R.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 30, l: 0, m: 0.6 + Math.random() * 0.7, c: c[i % c.length], r: 1.5 + Math.random() * 2.5 }); }
@@ -18,6 +19,14 @@
     state = "crash"; over = performance.now(); shake = 9; boom(46, ["#ff7a00", "#ffd23f", "#ff3b5c", "#fff"]);
     msg = "CRASH!|TAP THRUST TO RETRY";
     if (navigator.vibrate) try { navigator.vibrate(60); } catch (e) {}
+  }
+  function spark(x, y, n, cols, sp) {
+    for (var i = 0; i < n; i++) { var a = Math.random() * 6.28, v = (sp || 110) * (0.3 + Math.random()); parts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 30, l: 0, m: 0.4 + Math.random() * 0.4, c: cols[i % cols.length], r: 1.5 + Math.random() * 2 }); }
+  }
+  var RK = [[130, GY - 46, 172, GY], [143, GY - 74, 163, GY - 46]];
+  function hitRock(x, y, r) {
+    for (var i = 0; i < RK.length; i++) { var q = RK[i], dx = Math.max(q[0] - x, 0, x - q[2]), dy = Math.max(q[1] - y, 0, y - q[3]); if (dx * dx + dy * dy < r * r) return 1; }
+    return 0;
   }
   function got() { var n = 0; coins.forEach(function (c) { n += c.got; }); return n; }
   function step(dt) {
@@ -42,7 +51,26 @@
       coins.forEach(function (c) {
         if (!c.got && Math.abs(c.x - R.x) < 18 && Math.abs(c.y - R.y) < 20) { c.got = 1; boom(0, []); for (var j = 0; j < 12; j++) parts.push({ x: c.x, y: c.y, vx: (Math.random() - 0.5) * 120, vy: (Math.random() - 0.5) * 120, l: 0, m: 0.5, c: "#ffd23f", r: 2 }); }
       });
-      if (R.y + 15 >= GY && R.vy >= 0) {
+      spawnT -= dt;
+      if (spawnT <= 0 && warns.length + meteors.length < 3) {
+        spawnT = 1.5 + Math.random() * 1;
+        var mx = Math.random() < 0.55 ? Math.max(20, Math.min(W - 20, R.x + R.vx * 0.5 + (Math.random() - 0.5) * 50)) : 20 + Math.random() * (W - 40);
+        warns.push({ x: mx, t: 0.85 });
+      }
+      warns = warns.filter(function (w) {
+        w.t -= dt;
+        if (w.t <= 0) { meteors.push({ x: w.x, y: -12, vx: (Math.random() - 0.5) * 40, vy: 105 + Math.random() * 55, a: 0 }); return false; }
+        return true;
+      });
+      for (var mi = meteors.length - 1; mi >= 0; mi--) {
+        var m = meteors[mi]; m.x += m.vx * dt; m.y += m.vy * dt; m.a += 5 * dt;
+        parts.push({ x: m.x, y: m.y - 6, vx: -m.vx * 0.2, vy: -25, l: 0, m: 0.3, c: Math.random() < 0.5 ? "#ff7a00" : "#ff3b5c", r: 3 });
+        var ddx = m.x - R.x, ddy = m.y - R.y;
+        if (ddx * ddx + ddy * ddy < 17 * 17) { spark(m.x, m.y, 16, ["#ff7a00", "#ffd23f"], 140); meteors.splice(mi, 1); crash(); break; }
+        if (m.y > GY - 6 || hitRock(m.x, m.y, 8)) { spark(m.x, Math.min(m.y, GY - 4), 14, ["#ff7a00", "#ffd23f", "#ff3b5c"], 120); shake = Math.max(shake, 3); meteors.splice(mi, 1); }
+      }
+      if (state === "fly" && hitRock(R.x, R.y, 10)) crash();
+      if (state === "fly" && R.y + 15 >= GY && R.vy >= 0) {
         var onT = R.x > TP.x && R.x < TP.x + TP.w, onL = R.x > LP.x && R.x < LP.x + LP.w,
           soft = R.vy < 95 && Math.abs(R.a) < 0.6 && Math.abs(R.vx) < 80;
         if (soft && (onT || onL)) {
@@ -73,6 +101,12 @@
     coins.forEach(function (c) { if (c.got) return; var p = 1 + 0.12 * Math.sin(t * 5 + c.x); cx.beginPath(); cx.arc(c.x, c.y, 8 * p, 0, 6.28); cx.fillStyle = "#ffd23f"; cx.shadowColor = "#ffd23f"; cx.shadowBlur = 12; cx.fill(); cx.shadowBlur = 0; cx.fillStyle = "#b8860b"; cx.fillRect(c.x - 1.5, c.y - 4, 3, 8); });
     parts.forEach(function (p) { cx.globalAlpha = Math.max(0, 1 - p.l / p.m); cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, p.r * (1 - 0.5 * p.l / p.m), 0, 6.28); cx.fill(); });
     cx.globalAlpha = 1;
+    cx.fillStyle = "#3b4170"; cx.beginPath();
+    [[126, 0], [131, 30], [140, 44], [146, 70], [154, 58], [160, 74], [167, 42], [175, 28], [178, 0]].forEach(function (p, i) { i ? cx.lineTo(p[0], GY - p[1]) : cx.moveTo(p[0], GY - p[1]); });
+    cx.closePath(); cx.fill(); cx.fillStyle = "rgba(255,255,255,.14)"; cx.beginPath(); cx.moveTo(146, GY - 70); cx.lineTo(154, GY - 58); cx.lineTo(150, GY - 20); cx.lineTo(140, GY - 44); cx.closePath(); cx.fill();
+    cx.strokeStyle = "rgba(0,240,255,.35)"; cx.lineWidth = 1; cx.stroke();
+    warns.forEach(function (w) { if (Math.floor(w.t * 10) % 2) return; cx.fillStyle = "#ff3b5c"; cx.beginPath(); cx.moveTo(w.x, 28); cx.lineTo(w.x + 7, 42); cx.lineTo(w.x - 7, 42); cx.fill(); cx.fillStyle = "#fff"; cx.font = "900 9px sans-serif"; cx.textAlign = "center"; cx.fillText("!", w.x, 40); });
+    meteors.forEach(function (m) { cx.save(); cx.translate(m.x, m.y); cx.rotate(m.a); cx.shadowColor = "#ff7a00"; cx.shadowBlur = 14; cx.fillStyle = "#ff7a00"; cx.beginPath(); cx.arc(0, 0, 8, 0, 6.28); cx.fill(); cx.shadowBlur = 0; cx.fillStyle = "#7a2d00"; cx.beginPath(); cx.arc(-2, -2, 3, 0, 6.28); cx.arc(3, 2, 2, 0, 6.28); cx.fill(); cx.restore(); });
     if (state !== "crash") {
       cx.save(); cx.translate(R.x, R.y); cx.rotate(R.a);
       var fl = (keys.t && fuel > 0 && state === "fly") ? 1 : (state === "idle" ? 0.15 : 0);
