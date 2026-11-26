@@ -584,6 +584,7 @@ function briefText(S, p) {
   return [
     "Hi Scale Shift Studio! 👋",
     "",
+    (S.name ? "From: " + S.name : "From: (name not shared)"),
     "Project idea: " + S.q,
     "Type: " + (S.t.length ? S.t.map((k) => TY[k].n).join(" + ") : "Custom digital product"),
     "Key features: " + (feats.length ? feats.join(", ") : "to be discussed"),
@@ -643,6 +644,14 @@ function buildLab(q, S) {
     return [d, n, x[1]];
   });
   C.append(tlh, bar);
+  const nm = el("input", "ib-in");
+  nm.placeholder = "Your name (optional)";
+  nm.setAttribute("aria-label", "Your name");
+  nm.autocomplete = "name";
+  nm.maxLength = 40;
+  nm.oninput = () => { S.name = nm.value.trim(); draw(); };
+  C.appendChild(el("div", "ib-h ib-s", "ADD YOUR NAME, THEN SEND"));
+  C.appendChild(nm);
   C.appendChild(el("div", "ib-h ib-s", "YOUR BRIEF (READY TO SEND)"));
   const br = el("div", "ib-br");
   C.appendChild(br);
@@ -677,39 +686,112 @@ function buildLab(q, S) {
   draw();
   return C;
 }
-async function run(q) {
-  if (busy) return;
-  busy = true;
+const GREET = new Set("hi hii hiii hello helo hey heyy hola yo sup namaste namaskar good morning evening afternoon there bro sir mam".split(" "));
+const STOP = new Set("i a an the me my for to and of is it in on at we you your our please need want like looking build make create develop get have help can could would hi hello hey hii hola yo namaste with some something thing want wanna should".split(" "));
+const TYPEW = /^(web|website|websites|site|app|apps|android|ios|iphone|mobile|game|games|gaming|bot|chatbot|ai|design|ui|ux|logo|online|store|shop)$/;
+const INTENT = /\b(need|want|wanna|build|make|create|develop|looking|start|launch|startup|business|idea|chahiye|banana|banwana|banwani|banao|banwa)\b/i;
+let PEND = "",
+  RID = 0;
+function toks(q) { return q.toLowerCase().match(/[a-z\u0900-\u097f']+/g) || []; }
+function kindOf(q) {
+  const t = toks(q), low = q.toLowerCase();
+  if (!t.length || /(.)\1{3,}/.test(low) || /[bcdfghjklmnpqrstvwxyz]{6,}/.test(low) || t.every((x) => !/[aeiou\u0900-\u097f]/.test(x))) return "gib";
+  if (/\b(thanks|thank you|thx|shukriya|dhanyavad|dhanyawad)\b/.test(low) && t.length <= 5) return "thanks";
+  const types = Object.keys(TY).filter((k) => TY[k].re.test(q));
+  if (t.every((x) => GREET.has(x))) return "greet";
+  if (!types.length && /\b(who are you|what can you do|what do you do|how does this work|how do you work|help me|help)\b/.test(low) && t.length <= 6) return "intro";
+  const fk = Object.keys(KB).find((k) => new RegExp(k, "i").test(q)),
+    isQ = /\?\s*$|^(what|when|where|how|do you|can you|are you|kya|kab|kahan|kitna|kitne)\b/i.test(q);
+  if (fk && (!types.length || isQ)) return "faq";
+  if (types.length) return "types";
+  if (INTENT.test(q) && t.filter((x) => x.length > 2 && !STOP.has(x)).length >= 2) return "intent";
+  return "other";
+}
+function say(Rn, text, qrs) {
+  const my = RID;
+  return new Promise((res) => {
+    const d = el("div", "ib-dots");
+    d.innerHTML = "<span></span><span></span><span></span>";
+    Rn.appendChild(d);
+    setTimeout(() => {
+      d.remove();
+      if (my !== RID) return res();
+      const m = el("div", "ib-msg"),
+        h = el("div", "ib-h", "STUDIO AGENT");
+      m.append(h, el("p", "ib-p", text));
+      if (qrs && qrs.length) {
+        const r = el("div", "ib-row");
+        qrs.forEach((x) => {
+          const b = el("button", "ib-b", x[0]);
+          b.type = "button";
+          b.onclick = x[1];
+          r.appendChild(b);
+        });
+        m.appendChild(r);
+      }
+      Rn.appendChild(m);
+      gsap.from(m, { opacity: 0, y: 16, duration: 0.4 });
+      res();
+    }, 650);
+  });
+}
+const EX = ["An app for my gym with bookings", "A website for my restaurant", "A 2D mobile game for my brand", "A WhatsApp bot for my customers"];
+async function run(q, o) {
+  o = o || {};
+  const rid = ++RID;
   const Rn = $("#run");
   Rn.innerHTML = "";
   Rn.classList.add("o");
-  const faqKey = Object.keys(KB).find((k) => new RegExp(k, "i").test(q)),
-    types = Object.keys(TY).filter((k) => TY[k].re.test(q)),
-    isQ = /\?\s*$|^(what|when|where|how|do you|can you|are you|kya|kab|kahan|kitna|kitne)\b/i.test(q),
-    faq = faqKey && (!types.length || isQ);
-  const steps = faq
-    ? ["Reading your question", "Searching studio knowledge", "Drafting the answer"]
-    : ["Reading your idea", "Matching it with our services", "Sizing the scope", "Building your blueprint"];
-  for (const s of steps) {
-    const row = el("div", "st");
-    row.innerHTML = '<i class="sn"></i><span>' + s + "…</span>";
-    Rn.appendChild(row);
-    gsap.from(row, { opacity: 0, x: -20, duration: 0.35 });
-    await wait(380);
-    const i = row.querySelector("i");
-    i.className = "ok";
-    i.textContent = "✓";
+  let kind = kindOf(q);
+  if (PEND && (kind === "types" || kind === "intent" || kind === "other")) {
+    q = PEND + " — " + q;
+    kind = kindOf(q);
   }
-  let out;
-  if (faq) {
-    out = el("div", "ib-card");
-    out.appendChild(el("div", "ib-h", "STUDIO AGENT · ANSWER"));
-    out.appendChild(el("p", "ib-p", KB[faqKey]));
-  } else out = buildLab(q, { q, t: types, f: [], s: 1 });
-  Rn.appendChild(out);
-  gsap.from(out, { opacity: 0, y: 24, scale: 0.96, duration: 0.55, ease: "back.out(1.6)" });
-  setTimeout(() => (ls ? ls.scrollTo(out, { offset: -110 }) : out.scrollIntoView({ behavior: "smooth", block: "center" })), 250);
-  busy = false;
+  PEND = "";
+  const exQ = EX.map((x) => [x, () => run(x)]);
+  let types = o.types || Object.keys(TY).filter((k) => TY[k].re.test(q));
+  if (o.chip && types.length) kind = "types";
+  if (kind === "gib") {
+    await say(Rn, "Hmm, I couldn't make sense of that. Tell me in a sentence what you'd like to build, for example:", exQ);
+  } else if (kind === "thanks") {
+    await say(Rn, "You're welcome! Whenever you're ready, describe your idea and I'll draft a brief for you.", []);
+  } else if (kind === "greet" || kind === "intro") {
+    await say(Rn, "Hey, I'm the Studio Agent at Scale Shift. Describe what you want to build in a sentence and I'll draft a project brief with stack and timeline. You can also ask about location, jobs or how to reach us. For example:", exQ);
+  } else if (kind === "faq") {
+    const fk = Object.keys(KB).find((k) => new RegExp(k, "i").test(q));
+    await say(Rn, KB[fk], [["I have a project idea", () => aiIn.focus()]]);
+  } else if (kind === "intent") {
+    await say(Rn, "That sounds interesting. What type of product is it?", [
+      ["Website", () => run(q, { types: ["web"], chip: 1 })], ["Mobile app", () => run(q, { types: ["app"], chip: 1 })],
+      ["Game", () => run(q, { types: ["game"], chip: 1 })], ["AI / automation", () => run(q, { types: ["ai"], chip: 1 })],
+      ["UI / UX design", () => run(q, { types: ["ux"], chip: 1 })], ["Not sure yet", () => run(q, { types: [], chip: 1 })],
+    ]);
+  } else if (kind === "other") {
+    await say(Rn, "I'm built to help with project ideas and questions about the studio, so I may have missed that one. Try describing what you'd like to build, or ask about timings, location or jobs.", exQ);
+  } else {
+    const detail = toks(q).filter((x) => x.length > 2 && !STOP.has(x) && !TYPEW.test(x));
+    if (!o.chip && !detail.length) {
+      PEND = q;
+      await say(Rn, "Nice choice. Tell me a bit more: what will it do and who is it for? Even one line helps.", exQ);
+    } else {
+      for (const s of ["Reading your idea", "Matching it with our services", "Sizing the scope", "Building your blueprint"]) {
+        const row = el("div", "st");
+        row.innerHTML = '<i class="sn"></i><span>' + s + "…</span>";
+        Rn.appendChild(row);
+        gsap.from(row, { opacity: 0, x: -20, duration: 0.35 });
+        await wait(380);
+        if (rid !== RID) return;
+        const i = row.querySelector("i");
+        i.className = "ok";
+        i.textContent = "✓";
+      }
+      if (rid !== RID) return;
+      const out = buildLab(q, { q, t: types, f: [], s: 1, name: "" });
+      Rn.appendChild(out);
+      gsap.from(out, { opacity: 0, y: 24, scale: 0.96, duration: 0.55, ease: "back.out(1.6)" });
+      setTimeout(() => (ls ? ls.scrollTo(out, { offset: -110 }) : out.scrollIntoView({ behavior: "smooth", block: "center" })), 250);
+    }
+  }
 }
 const aiIn = $("#ai");
 $("#af").onsubmit = (e) => {
@@ -726,7 +808,7 @@ $$(".chips button").forEach(
   (b) =>
     (b.onclick = () => {
       aiIn.value = b.textContent;
-      run(b.textContent);
+      run(b.textContent, { chip: 1 });
     }),
 );
 (function () {
