@@ -46,3 +46,7 @@ footer{padding:40px 0 70px;border-top:1px solid var(--bd);color:var(--mut);font-
 .cap{margin:10px 0 2px;text-align:center;font:700 11px 'Space Mono',monospace;letter-spacing:.1em;color:var(--mut)}
 @media(hover:none){.kh{display:none}}
 @media(max-width:820px){.sim{grid-template-columns:1fr;grid-template-areas:"tx" "scr" "ct";row-gap:20px}.scr{max-width:340px;margin:0 auto;width:100%}.sim .ctrl{max-width:none}.ctrl button{min-height:64px;font-size:14px}.mis{display:none}}
+
+.snd{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.snd button{padding:8px 14px;border:1px solid var(--bd);border-radius:999px;background:rgba(255,255,255,.04);color:var(--fg);font:700 11px 'Space Mono',monospace;letter-spacing:.08em;cursor:pointer;transition:.15s}
+.snd button:hover{border-color:var(--a)}.snd button[aria-pressed=false]{opacity:.55}
