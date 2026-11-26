@@ -1068,3 +1068,19 @@ footer .ab{font-size:12px;opacity:.65}
 html.perf .lite .pn .e::before,html.perf .lite .pn .e::after,html.perf .lite .pn .e{animation:none}
 @media (prefers-reduced-motion:reduce){.lite .pn .e::before,.lite .pn .e::after{animation:none}}
 .lite .pn .n{font-size:84px;top:4px;right:16px}
+
+/* ===== Idea Lab (agent result) ===== */
+.ib-card{margin-top:22px;max-width:880px;padding:24px;border:1px solid var(--bd);border-radius:26px;background:rgba(8,12,28,.62)}
+.ib-h{font:700 12px "Space Mono",monospace;letter-spacing:.12em;color:var(--a)}.ib-s{margin-top:22px}
+.ib-p{margin:12px 0 0;line-height:1.6}.ib-n{margin:16px 0 0;font-size:14px;opacity:.7}
+.ib-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.ib-t{padding:7px 14px;border-radius:999px;background:var(--a);color:#04050d;font:700 12px "Space Mono",monospace;letter-spacing:.06em}
+.ib-b,.ib-seg button{padding:10px 15px;border:1px solid var(--bd);border-radius:999px;background:transparent;color:inherit;font:700 12px "Space Mono",monospace;cursor:pointer;transition:.2s}
+.ib-b:hover{border-color:var(--a)}.ib-b.on,.ib-seg button.on{background:var(--a);color:#04050d;border-color:var(--a)}
+.ib-seg{display:inline-flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ib-bar{display:flex;gap:4px;margin-top:12px}
+.ib-bar div{flex:var(--g,.25) 1 0;min-width:0;padding:10px 8px;border-radius:12px;background:linear-gradient(135deg,var(--a),transparent 170%);color:#04050d;display:flex;flex-direction:column;transition:flex-grow .5s}
+.ib-bar small{font:700 10px "Space Mono",monospace;letter-spacing:.04em;overflow:hidden;text-overflow:clip}.ib-bar b{font:900 15px Unbounded,system-ui,sans-serif}
+.ib-br{margin-top:12px;padding:16px;border-radius:16px;background:rgba(0,0,0,.4);white-space:pre-wrap;word-break:break-word;font:13px/1.65 "Space Mono",monospace}
+.ib-ac{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+@media(max-width:600px){.ib-card{padding:18px}.ib-bar div{padding:8px 4px}.ib-bar b{font-size:13px}.ib-bar small{font-size:8.5px;letter-spacing:0}}

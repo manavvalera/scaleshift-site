@@ -530,102 +530,212 @@ const KB = {
   "\\b(your games|rocket|coconut|release|play store)\\b":
     "Rocket Booster (3D, Android) is launching soon on Google Play, and Coconut: Quest Island Empire is in development. See the Games section!",
 };
-const TY = [
-  ["Website", /\b(web|website|site|landing|portal|shop|ecommerce|store)\b/i, "React / Next.js · Node · Postgres", [3, 8]],
-  ["Mobile App", /\b(app|apps|android|ios|iphone|mobile|booking)\b/i, "Flutter or React Native · Firebase", [8, 16]],
-  ["Game", /\b(game|games|unity|unreal|gaming)\b/i, "Unity / Unreal · custom tools", [12, 40]],
-  ["AI / Automation", /\b(ai|bot|chatbot|automation|automate|gpt|workflow)\b/i, "LLM APIs · Python · automation stack", [2, 6]],
-  ["UI / UX Design", /\b(design|ui|ux|brand|branding|logo)\b/i, "Figma · design system", [2, 5]],
-];
+const TY = {
+  web: { n: "Website", w: 3, stack: "HTML/CSS/JS or React / Next.js",
+    re: /\b(web|website|websites|site|landing|portal|shop|ecommerce|e-commerce|online store|dashboard|saas|blog|portfolio|dukan)\b/i,
+    ft: [["Online payments", 1], ["Booking / forms", 0.5], ["Admin panel", 1.5], ["Blog / CMS", 0.5], ["Multi-language", 1], ["Rich animations", 0.5]] },
+  app: { n: "Mobile App", w: 8, stack: "Flutter (Android + iOS)",
+    re: /\b(apps?|android|ios|iphone|mobile|play store|app store)\b/i,
+    ft: [["Login & profiles", 1], ["Payments", 1.5], ["Push notifications", 0.5], ["Maps / location", 1], ["Admin panel", 2], ["Offline mode", 1.5]] },
+  game: { n: "Game", w: 12, stack: "Unity",
+    re: /\b(games?|gaming|unity|2d|3d)\b/i,
+    ft: [["Multiplayer", 4], ["3D graphics", 3], ["Leaderboards", 1], ["In-app purchases", 1.5], ["Ads", 0.5], ["Level editor", 3]] },
+  ai: { n: "AI / Automation", w: 3, stack: "LLM APIs + automation tools",
+    re: /\b(ai|bot|bots|chatbot|automation|automate|gpt|llm|workflow)\b/i,
+    ft: [["WhatsApp / web chatbot", 1.5], ["Document Q&A", 2], ["Workflow automation", 1.5], ["Dashboards", 1]] },
+  ux: { n: "UI / UX Design", w: 2, stack: "Figma",
+    re: /\b(design|ui|ux|branding|logo|figma)\b/i,
+    ft: [["Brand identity", 1], ["Design system", 1], ["Clickable prototype", 0.5], ["Landing page design", 0.5]] },
+};
+const SPD = [["Lean MVP", 0.6], ["Standard", 1], ["Full product", 1.4]];
+const PH = [["Plan", 0.1], ["Design", 0.2], ["Build", 0.55], ["Ship", 0.15]];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let busy = false;
+function el(tag, cls, txt) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (txt != null) e.textContent = txt;
+  return e;
+}
+function copyText(t) {
+  if (navigator.clipboard && window.isSecureContext)
+    return navigator.clipboard.writeText(t).catch(() => fallbackCopy(t));
+  return Promise.resolve(fallbackCopy(t));
+}
+function fallbackCopy(t) {
+  const x = el("textarea");
+  x.value = t;
+  x.style.cssText = "position:fixed;opacity:0";
+  document.body.appendChild(x);
+  x.select();
+  try { document.execCommand("copy"); } catch (e) {}
+  x.remove();
+}
+function plan(S) {
+  const ws = S.t.map((k) => TY[k].w).sort((a, b) => b - a);
+  let base = ws.length ? ws[0] + 0.5 * ws.slice(1).reduce((a, x) => a + x, 0) : 4;
+  S.f.forEach((id) => { const p = id.split(":"); base += TY[p[0]].ft[p[1]][1]; });
+  const w = Math.max(2, Math.round(base * SPD[S.s][1])),
+    lo = Math.max(1, Math.round(w * 0.85));
+  return { w, lo, hi: Math.max(lo + 1, Math.round(w * 1.2)) };
+}
+function briefText(S, p) {
+  const feats = S.f.map((id) => { const q = id.split(":"); return TY[q[0]].ft[q[1]][0]; });
+  return [
+    "Hi Scale Shift Studio! 👋",
+    "",
+    "Project idea: " + S.q,
+    "Type: " + (S.t.length ? S.t.map((k) => TY[k].n).join(" + ") : "Custom digital product"),
+    "Key features: " + (feats.length ? feats.join(", ") : "to be discussed"),
+    "Scope: " + SPD[S.s][0],
+    "Suggested stack: " + (S.t.length ? S.t.map((k) => TY[k].stack).join(" | ") : "chosen after discovery"),
+    "Indicative timeline: " + p.lo + "–" + p.hi + " weeks",
+    "",
+    "Could we set up a free discovery call?",
+  ].join("\n");
+}
+function buildLab(q, S) {
+  const C = el("div", "ib-card"),
+    head = el("div", "ib-h", "STUDIO AGENT · PROJECT BLUEPRINT");
+  C.appendChild(head);
+  const tyRow = el("div", "ib-row");
+  if (S.t.length) S.t.forEach((k) => tyRow.appendChild(el("span", "ib-t", TY[k].n)));
+  else tyRow.appendChild(el("span", "ib-t", "Custom digital product"));
+  C.appendChild(tyRow);
+  const st = el("p", "ib-p");
+  st.innerHTML = "<b>Suggested stack:</b> ";
+  st.appendChild(document.createTextNode((S.t.length ? S.t.map((k) => TY[k].stack).join(" | ") : "chosen after discovery") + " (final choice fits your project)"));
+  C.appendChild(st);
+  const fts = S.t.filter((k) => TY[k].ft.length);
+  if (fts.length) {
+    C.appendChild(el("div", "ib-h ib-s", "TAP THE FEATURES YOU NEED"));
+    const fr = el("div", "ib-row");
+    fts.forEach((k) => TY[k].ft.forEach((f, i) => {
+      const b = el("button", "ib-b", f[0]);
+      b.type = "button";
+      b.setAttribute("aria-pressed", "false");
+      b.onclick = () => {
+        const id = k + ":" + i, at = S.f.indexOf(id);
+        at < 0 ? S.f.push(id) : S.f.splice(at, 1);
+        b.classList.toggle("on", at < 0);
+        b.setAttribute("aria-pressed", at < 0 ? "true" : "false");
+        draw();
+      };
+      fr.appendChild(b);
+    }));
+    C.appendChild(fr);
+  }
+  C.appendChild(el("div", "ib-h ib-s", "HOW BIG DO YOU WANT TO START?"));
+  const sg = el("div", "ib-seg");
+  SPD.forEach((x, i) => {
+    const b = el("button", i === S.s ? "on" : "", x[0]);
+    b.type = "button";
+    b.onclick = () => { S.s = i; sg.querySelectorAll("button").forEach((y, j) => y.classList.toggle("on", j === i)); draw(); };
+    sg.appendChild(b);
+  });
+  C.appendChild(sg);
+  const tlh = el("div", "ib-h ib-s"),
+    bar = el("div", "ib-bar");
+  const segs = PH.map((x) => {
+    const d = el("div"), l = el("small", "", x[0]), n = el("b", "");
+    d.append(l, n);
+    bar.appendChild(d);
+    return [d, n, x[1]];
+  });
+  C.append(tlh, bar);
+  C.appendChild(el("div", "ib-h ib-s", "YOUR BRIEF (READY TO SEND)"));
+  const br = el("div", "ib-br");
+  C.appendChild(br);
+  const ac = el("div", "ib-ac"),
+    wa = el("a", "sb f", "Send on WhatsApp ↗"),
+    cp = el("button", "sb", "Copy brief"),
+    ig = el("a", "sb", "Copy + Instagram DM"),
+    em = el("a", "sb", "Email");
+  cp.type = "button";
+  wa.target = ig.target = "_blank";
+  wa.rel = ig.rel = "noopener";
+  ig.href = "https://ig.me/m/scaleshift.studio";
+  ac.append(wa, cp, ig, em);
+  C.appendChild(ac);
+  C.appendChild(el("p", "ib-n", "Pricing is shared after a short discovery call, because every project is different."));
+  let txt = "";
+  function draw() {
+    const p = plan(S);
+    txt = briefText(S, p);
+    tlh.textContent = "INDICATIVE TIMELINE · " + p.lo + "–" + p.hi + " WEEKS";
+    segs.forEach((x) => {
+      x[0].style.setProperty("--g", x[2]);
+      x[1].textContent = Math.max(1, Math.round(p.w * x[2])) + "w";
+    });
+    br.textContent = txt;
+    wa.href = "https://wa.me/919313070349?text=" + encodeURIComponent(txt);
+    em.href = "mailto:hello@scaleshift.studio?subject=" + encodeURIComponent("Project brief: " + S.q.slice(0, 50)) + "&body=" + encodeURIComponent(txt);
+  }
+  const flash = (b, m, o) => { b.textContent = m; setTimeout(() => (b.textContent = o), 1800); };
+  cp.onclick = () => copyText(txt).then(() => flash(cp, "Copied ✓", "Copy brief"));
+  ig.addEventListener("click", () => { copyText(txt); flash(ig, "Copied · paste in DM ✓", "Copy + Instagram DM"); });
+  draw();
+  return C;
+}
 async function run(q) {
   if (busy) return;
   busy = true;
   const Rn = $("#run");
   Rn.innerHTML = "";
   Rn.classList.add("o");
-  const faq = Object.keys(KB).find((k) => new RegExp(k, "i").test(q)),
-    hit = TY.filter((t) => t[1].test(q));
+  const faqKey = Object.keys(KB).find((k) => new RegExp(k, "i").test(q)),
+    types = Object.keys(TY).filter((k) => TY[k].re.test(q)),
+    isQ = /\?\s*$|^(what|when|where|how|do you|can you|are you|kya|kab|kahan|kitna|kitne)\b/i.test(q),
+    faq = faqKey && (!types.length || isQ);
   const steps = faq
-    ? [
-        "Reading your question",
-        "Searching studio knowledge",
-        "Drafting the answer",
-      ]
-    : [
-        "Reading your idea",
-        "Matching it with our services",
-        "Estimating scope & timeline",
-        "Drafting your project brief",
-      ];
+    ? ["Reading your question", "Searching studio knowledge", "Drafting the answer"]
+    : ["Reading your idea", "Matching it with our services", "Sizing the scope", "Building your blueprint"];
   for (const s of steps) {
-    const row = document.createElement("div");
-    row.className = "st";
+    const row = el("div", "st");
     row.innerHTML = '<i class="sn"></i><span>' + s + "…</span>";
     Rn.appendChild(row);
-    gsap.from(row, { opacity: 0, x: -20, duration: 0.4 });
-    await wait(520);
+    gsap.from(row, { opacity: 0, x: -20, duration: 0.35 });
+    await wait(380);
     const i = row.querySelector("i");
     i.className = "ok";
     i.textContent = "✓";
   }
-  const c = document.createElement("div");
-  c.className = "rc";
-  if (faq)
-    c.innerHTML =
-      '<b class="m">STUDIO AGENT · ANSWER</b><p>' + KB[faq] + "</p>";
-  else {
-    const t = hit.length
-        ? hit
-        : [
-            [
-              "Custom Digital Product",
-              "",
-              "Discovery first — we recommend the best stack",
-              [4, 12],
-            ],
-          ],
-      lo = Math.min(...t.map((x) => x[3][0])),
-      hi = (t.reduce((s, x) => s + x[3][1], 0) * 0.7) | 0;
-    c.innerHTML =
-      '<b class="m">STUDIO AGENT · PROJECT BRIEF</b><p><b>Type:</b> ' +
-      t.map((x) => x[0]).join(" + ") +
-      "</p><p><b>Suggested stack:</b> " +
-      t.map((x) => x[2]).join(" | ") +
-      "</p><p><b>Indicative timeline:</b> " +
-      lo +
-      "–" +
-      Math.max(lo + 2, hi) +
-      ' weeks</p><p><b>Next step:</b> free 30-min discovery call</p><a href="mailto:hello@scaleshift.studio?subject=Project%20brief&body=' +
-      encodeURIComponent(
-        "Hi! Idea: " + q + "\nType: " + t.map((x) => x[0]).join(", "),
-      ) +
-      '">Send brief by email →</a> &nbsp; <a href="https://wa.me/919313070349?text=' +
-      encodeURIComponent("Hi! Project idea: " + q) +
-      '">or WhatsApp us →</a>';
-  }
-  Rn.appendChild(c);
-  gsap.from(c, {
-    opacity: 0,
-    y: 24,
-    scale: 0.94,
-    duration: 0.6,
-    ease: "back.out(2)",
-  });
+  let out;
+  if (faq) {
+    out = el("div", "ib-card");
+    out.appendChild(el("div", "ib-h", "STUDIO AGENT · ANSWER"));
+    out.appendChild(el("p", "ib-p", KB[faqKey]));
+  } else out = buildLab(q, { q, t: types, f: [], s: 1 });
+  Rn.appendChild(out);
+  gsap.from(out, { opacity: 0, y: 24, scale: 0.96, duration: 0.55, ease: "back.out(1.6)" });
+  setTimeout(() => (ls ? ls.scrollTo(out, { offset: -110 }) : out.scrollIntoView({ behavior: "smooth", block: "center" })), 250);
   busy = false;
 }
+const aiIn = $("#ai");
 $("#af").onsubmit = (e) => {
   e.preventDefault();
-  run($("#ai").value.trim() || "I have a project idea");
+  const v = aiIn.value.trim();
+  if (!v) {
+    aiIn.focus();
+    gsap.fromTo(aiIn, { x: -8 }, { x: 0, duration: 0.5, ease: "elastic.out(1,0.3)" });
+    return;
+  }
+  run(v);
 };
 $$(".chips button").forEach(
   (b) =>
     (b.onclick = () => {
-      $("#ai").value = b.textContent;
+      aiIn.value = b.textContent;
       run(b.textContent);
     }),
 );
+(function () {
+  const ex = ["I need an app for my gym with bookings", "A website for my restaurant with online orders", "A 2D mobile game for my brand", "A WhatsApp bot that answers my customers"];
+  let n = 0;
+  setInterval(() => {
+    if (document.activeElement !== aiIn && !aiIn.value && !document.hidden) aiIn.placeholder = "e.g. " + ex[++n % ex.length];
+  }, 3200);
+})();
 const sndBtn = $("#snd");
 if (sndBtn) sndBtn.onclick = () => {
   audio();
