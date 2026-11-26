@@ -57,7 +57,8 @@
 
 <section class="s"><h2>How to <em>play</em></h2>
 <p class="lead">Just 3 buttons. Hold the thrust button on the right to blast upward, and use the two buttons on the left to steer your rocket left and right. Easy to learn, hard to master!</p>
-<div class="ctrl" aria-label="Controls"><span>◀ LEFT</span><span>RIGHT ▶</span><span class="th">🔥 THRUST</span></div></section>
+<div class="sim"><div class="ctrl" aria-label="Controls"><button type="button" data-k="l" aria-label="Steer left">◀ LEFT</button><button type="button" data-k="r" aria-label="Steer right">RIGHT ▶</button><button type="button" class="th" data-k="t" aria-label="Thrust">🔥 THRUST</button></div>
+<div class="scr"><canvas id="sim" role="img" aria-label="Mini Rocket Booster game: collect the coins and land on the glowing pad"></canvas><p class="cap">TRY IT NOW · ← → SPACE ALSO WORK</p></div></div></section>
 
 <section class="s"><h2>Quick <em>answers</em></h2>
 <details><summary>What is Rocket Booster?</summary><p>A fast, fun and slightly crazy rocket-flying game where you launch from the pad, dodge hazards, collect coins and land safely on the landing pad.</p></details>
@@ -74,4 +75,5 @@
 <p class="bk"><a class="back" href="../../#games">← BACK TO ALL GAMES</a></p>
 <footer><a href="../../">Home</a><a href="../../privacy/">Privacy Policy</a><span>© 2026 Scale Shift Studio</span></footer>
 </div>
+<script src="/games/rocket-booster/sim.js" defer></script>
 </body></html>
