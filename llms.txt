@@ -1,10 +1,13 @@
 # Scale Shift Studio
 
-> Independent game, website and mobile app development studio based in Vadodara, Gujarat, India. Works with clients worldwide and publishes its own games.
+> Scale Shift Studio Private Limited, known as Scale Shift Studio (also written ScaleShift), is an independent game, website and mobile app development studio based in Vadodara, Gujarat, India. It works with clients worldwide and publishes its own games.
 
 ## Pages
 - [Home](https://scaleshift.studio/): services (websites, mobile apps, UI/UX, AI automation, game development, game co-development), games and how to contact us.
-- [Rocket Booster](https://scaleshift.studio/games/rocket-booster/): our physics-based 3D rocket game for Android, coming soon to Google Play.
+- [Website Development in Vadodara](https://scaleshift.studio/services/web-development-vadodara/): business websites, landing pages and web apps.
+- [Mobile App Development in Vadodara](https://scaleshift.studio/services/app-development-vadodara/): Android and iOS apps.
+- [Game Development in Vadodara](https://scaleshift.studio/services/game-development-vadodara/): games for hire and game co-development.
+- [Rocket Booster](https://scaleshift.studio/games/rocket-booster/): our physics-based rocket game for Android, coming soon to Google Play.
 - [Privacy Policy](https://scaleshift.studio/privacy/)
 
 ## Contact
